@@ -1,0 +1,28 @@
+﻿
+GLOBAL = {
+	every_country = {
+		every_interest_group = {
+			update_approval_lists = yes
+		}
+	}
+	c:USA = {
+		set_variable = {
+			name = months_between_elections
+			value = 24
+		}
+		every_state = {
+			limit = {
+				is_incorporated = yes
+			}
+			set_variable = {
+				name = next_election
+				value = total_months
+			}
+			#change_variable = {
+			#	name = next_election
+			#	add = 1
+			#}
+		}
+	}
+	
+}

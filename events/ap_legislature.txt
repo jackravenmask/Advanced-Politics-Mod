@@ -1,0 +1,59 @@
+﻿
+namespace = ap_legislature
+
+ap_legislature.1 = {
+	type = country_event
+	placement = root
+	hidden = yes
+
+	#trigger = {
+	#	always = yes
+	#}
+	immediate = {
+		set_variable = {
+			name = months_between_elections
+		}
+		recalculate_pop_ig_support = yes
+		every_scope_state = {
+			limit = {
+				is_incorporated = yes
+			}
+			state_do_election = yes
+		}
+		calc_legislators = yes
+	}
+}
+
+ap_legislature.2 = {
+	type = state_event
+	placement = root
+	hidden = yes
+
+	trigger = {
+		has_variable = next_election
+		total_months = var:next_election
+	}
+	immediate = {
+		state_do_election = yes
+		if = {
+			limit = {
+				owner = {
+					has_variable = months_between_elections
+				}
+			 }
+			change_variable = {
+				name = next_election
+				add = owner.var:months_between_elections
+			}
+		}
+		else = {
+			remove_variable = next_election
+		}
+
+		owner = {
+			calc_legislators = yes
+		}
+		
+	}
+	
+}

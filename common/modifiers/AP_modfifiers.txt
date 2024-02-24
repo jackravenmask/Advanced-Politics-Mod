@@ -1,0 +1,13 @@
+﻿
+
+pol_str_testing = {
+	state_political_strength_from_wealth_mult = -2
+	state_pop_pol_str_add = 1
+}
+pol_str_testing_2 = {
+	state_pop_pol_str_add = 2000
+}
+
+pol_str_testing_3 = {
+	state_pop_pol_str_mult = 20
+} 

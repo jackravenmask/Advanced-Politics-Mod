@@ -1,0 +1,586 @@
+﻿@panel_width = 400  				
+
+
+types politics_panel_types
+{
+
+		### IG ITEM BAR
+		type ig_item_bar_legislators = hbox {
+			layoutpolicy_horizontal = expanding
+			visible = "[GreaterThan_CFixedPoint(InterestGroup.MakeScope.Var('ig_num_legislators').GetValue, '(CFixedPoint)0')]"
+			#layoutstretchfactor_horizontal = "[FixedPointToInt(Multiply_CFixedPoint(InterestGroup.GetClout, '(CFixedPoint)100'))]"
+			minimumsize = { 85 -1 } #size of the 3 icons to make sure they always fit
+			margin = { 0 5 }
+			using = tooltip_below
+	
+			background = {
+				texture = "gfx/interface/tooltip/tooltip_title_bg.dds"
+				color = "[InterestGroup.GetColor]"
+				mirror = horizontal
+	
+				block "background_alpha" {
+					alpha = 0.4
+				}
+			}
+	
+			background = {
+				texture = "gfx/interface/tooltip/tooltip_title_bg.dds"
+				color = "[InterestGroup.GetColor]"
+	
+				block "background_alpha" {
+					alpha = 0.4
+				}
+			}
+			
+			background = {
+				using = entry_bg_simple_colored
+				color = "[InterestGroup.GetColor]"
+			}
+	
+			tooltipwidget = {
+				FancyTooltip_IG = {}
+			}
+	
+			flowcontainer = {
+				
+				### SUPPRESSED / BOLSTERED
+				icon = {
+					tooltip = "TOOLTIP_SUPPRESSED"
+					size = { 25 25 }
+					visible = "[InterestGroup.IsSuppressed]"
+					texture = "gfx/interface/icons/generic_icons/ig_suppress.dds"
+					parentanchor = vcenter
+					using = tooltip_below
+				}
+	
+				icon = {
+					tooltip = "TOOLTIP_PROMOTED"
+					size = { 25 25 }
+					visible = "[InterestGroup.IsBolstered]"
+					texture = "gfx/interface/icons/generic_icons/ig_bolster.dds"
+					parentanchor = vcenter
+					using = tooltip_below
+				}
+				
+				ig_button = {
+					block "ig_icon_size" {
+						size = { 45 45 }
+					}
+					blockoverride "in_government_icon" {}
+					parentanchor = vcenter
+					blockoverride "tooltip" {}
+				}
+	
+				icon = {
+					visible = "[InterestGroup.GetPartyAffiliationHighest.IsValid]"
+					texture = "[InterestGroup.GetPartyAffiliationHighest.GetIcon]"
+					size = { 25 25 }
+					tooltip = "[InterestGroup.GetPartyAffiliationTooltip]"
+					parentanchor = vcenter
+					using = tooltip_below
+				}
+	
+				widget = {
+					visible = "[Not(InterestGroup.GetPartyAffiliationHighest.IsValid)]"
+					size = { 2 2 }
+				}
+	
+				icon = {
+					visible = "[Not(InterestGroup.GetPartyAffiliationHighest.IsValid)]"
+					texture = "gfx/interface/icons/generic_icons/undecided_icon.dds"
+					size = { 25 25 }
+					tooltip = "[InterestGroup.GetPartyAffiliationTooltip]"
+					parentanchor = vcenter
+					using = tooltip_below
+				}		
+			}
+			fixedgridbox = {
+				datamodel = "[InterestGroup.MakeScope.GetList('ig_legislator_list')]"
+				#max_width = 250
+				addcolumn = 80
+				addrow = 90
+
+				datamodel_wrap = 2
+				
+				#flipdirection = yes
+				item = {
+					flowcontainer = {
+						datacontext = "[Scope.GetCharacter]"
+						direction = vertical
+						character_portrait_medium = {
+							blockoverride "tooltip" {
+								tooltipwidget = {
+									FancyTooltip_Character = {}
+								}
+							}
+							
+						}
+						textbox = {
+							text = "[Scope.GetCharacter.MakeScope.ScriptValue('legislator_law_proposal_approval')|0+]"
+							parentanchor = center
+						}
+			
+						#text_single = {
+						#	text = "[Character.GetNameNoTooltip]"
+						#}
+					}
+				}
+			}
+			
+		}
+	
+
+
+	type politics_panel_legislature = hbox{
+		datacontext = "[GetPlayer]"
+		layoutpolicy_horizontal = expanding
+		layoutpolicy_vertical = expanding
+
+		#vbox = {
+		#	layoutpolicy_horizontal = expanding
+		#	layoutpolicy_vertical = preferred
+		#	
+		#	default_header_clean_faded = {
+		#		layoutpolicy_horizontal = expanding
+		#		size = { 0 44 }
+		#		blockoverride "text" {
+		#			text = "POLITICAL_MOVEMENTS"
+		#		}
+		#	}
+		#	
+		#	vbox = {
+		#		layoutpolicy_horizontal = expanding
+		#		layoutpolicy_vertical = preferred
+		#		visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessPoliticalMovements))]"
+		#		datamodel = "[AccessPlayer.AccessPoliticalMovements]"
+		#		spacing = 10
+		#		margin = { 10 10 }
+		#		item = {
+		#			politics_panel_political_movement_item = {}
+		#		}
+		#	}
+		#	
+		#	empty_state_dynamic_width = {
+		#		layoutpolicy_vertical = expanding
+		#		size = { 0 0 }
+		#		visible = "[IsDataModelEmpty(AccessPlayer.AccessPoliticalMovements)]"
+		#		text = "NO_POLITICAL_MOVEMENTS"
+		#	}
+		#	
+		#	widget = {
+		#		visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessPoliticalMovements))]"
+		#		layoutpolicy_horizontal = expanding
+		#		layoutpolicy_vertical = expanding
+		#	}
+		#}
+
+
+		vbox = {
+			layoutpolicy_horizontal = expanding
+			layoutpolicy_vertical = expanding
+			spacing = 10
+			margin = { 10 10 }
+			
+			
+			hbox = {
+				visible = "[Not(GetVariableSystem.Exists('proposal_select'))]"
+				layoutpolicy_vertical = expanding
+				layoutpolicy_horizontal = expanding
+				vbox = {
+					layoutpolicy_horizontal = expanding
+				}
+				
+				vbox = {
+					#layoutpolicy_horizontal = expanding
+					min_width = @panel_width
+					layoutpolicy_vertical = expanding
+				}
+				
+				proposal_list = {
+
+					blockoverride "proposal_datamodel" {
+						datamodel = "[GetPlayer.MakeScope.GetList('proposed_laws')]"
+					}
+					blockoverride "proposal_datacontext" {
+						datacontext = "[Scope.GetLaw]"
+					}
+					blockoverride "proposal_item_visible" {
+						visible = "[Law.IsVisible]"
+					}
+					blockoverride "proposal_item_tooltip" {
+						tooltipwidget = {
+							FancyTooltip_Law = {}
+						}
+					}
+					blockoverride "proposal_item_content" {
+						
+						law_icon = {
+							size = {70 70}
+						}
+						flowcontainer = {
+							parentanchor = vcenter
+							direction = vertical
+							textbox = {
+								text = "[Law.GetGroup.GetNameNoFormatting]"
+								align = left|nobaseline
+								size = { 250 20 }
+								elide = right
+							}
+							textbox = {
+								text = "LAW"
+								align = left|nobaseline
+								size = { 250 30 }
+								using = fontsize_xl
+								elide = right
+							}
+						}
+					}
+					blockoverride "add_proposal_button" {
+						add_new_proposal = {
+							blockoverride "onclick" {
+								onclick = "[GetVariableSystem.Set( 'proposal_select', 'laws' )]"
+							}
+						}
+					}
+					vbox = {
+						layoutpolicy_horizontal = expanding
+						layoutpolicy_vertical = expanding 
+					}
+				}
+				vbox = {
+					max_width = @panel_width
+					
+					layoutpolicy_horizontal = expanding
+					layoutpolicy_vertical = expanding
+					add_new_proposal = {
+						#size = { @panel_width 90 }
+					}
+				}
+				vbox = {
+					layoutpolicy_horizontal = expanding
+				}
+			}
+			hbox = {
+				visible = "[Not(GetVariableSystem.Exists('proposal_select'))]"
+				layoutpolicy_vertical = expanding
+			}
+			
+			vbox = {
+				layoutpolicy_horizontal = expanding
+				layoutpolicy_vertical = expanding
+				
+				visible = "[GetVariableSystem.HasValue('proposal_select', 'laws')]"
+				hbox = {
+					datacontext = "[GetPlayer]"
+					spacing = 15
+					layoutpolicy_horizontal = preferred
+					layoutpolicy_vertical = preferred
+		
+					### POWER STRUCTURE
+					laws_list_proposal_selection = {
+						max_width = @panel_width
+						blockoverride "header" {
+							text = "POWER_STRUCTURE"
+						}
+						blockoverride "law_datamodel" {
+							datamodel = "[AccessPlayer.AccessActivePowerStructureLaws]"
+						}
+					}
+						
+					## ECONOMY
+					#laws_list = {
+					#	blockoverride "header" {
+					#		text = "ECONOMY"
+					#	}
+					#	blockoverride "law_datamodel" {
+					#		datamodel = "[AccessPlayer.AccessActiveEconomyLaws]"
+					#	}
+					#}
+					#
+					#### HUMAN RIGHTS
+					#laws_list = {
+					#	blockoverride "header" {
+					#		text = "HUMAN_RIGHTS"
+					#	}
+					#	blockoverride "law_datamodel" {
+					#		datamodel = "[AccessPlayer.AccessActiveHumanRightsLaws]"
+					#	}
+					#}
+					#
+					#vertical_divider_full = {
+					#	visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessActiveOtherLaws))]"
+					#	blockoverride "size" {
+					#		layoutpolicy_vertical = expanding
+					#	}
+					#}
+					#
+					#### OTHER LAWS
+					#laws_list = {
+					#	visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessActiveOtherLaws))]"
+					#	blockoverride "header" {
+					#		text = "OTHER"
+					#	}
+					#	blockoverride "law_datamodel" {
+					#		datamodel = "[AccessPlayer.AccessActiveOtherLaws]"
+					#	}
+					#}
+				}
+				hbox = {
+					layoutpolicy_horizontal = expanding
+					layoutpolicy_vertical = expanding
+					
+					vbox = {
+						layoutpolicy_vertical = expanding
+						add_new_proposal = {
+							min_width = @panel_width
+							blockoverride "onclick" {
+								onclick = "[GetVariableSystem.Clear( 'proposal_select' )]"
+							}
+						}
+					}
+				}
+				hbox = {
+					layoutpolicy_vertical = expanding
+					layoutpolicy_horizontal = expanding
+				}
+			}
+			
+			vbox = {
+				layoutpolicy_horizontal = expanding
+				layoutpolicy_vertical = preferred
+				hbox = {
+					#progressbars go here
+					layoutpolicy_vertical = expanding
+					layoutpolicy_horizontal = expanding
+
+					widget = {
+						layoutpolicy_horizontal = expanding
+						size = { 300 40 }
+						background = {
+							texture = "gfx/interface/progressbar/progressbar_empty.dds"
+							spriteType = Corneredtiled
+							spriteborder = { 4 4 }
+							texture_density = 2
+							
+							using = progressbar_texture_properties
+						}
+
+						widget = {
+							size = { 100% 100% }
+							parentanchor = right
+							scissor = yes
+							
+							progressbar = {
+								progresstexture = "gfx/interface/progressbar/progressbar_bad.dds"
+								#noprogresstexture = "gfx/interface/progressbar/progressbar_bad.dds"
+															
+								size = { 100% 100% }
+								spriteType = Corneredtiled
+								spriteborder = { 4 4 }
+								texture_density = 2
+								skip_initial_animation = yes
+								
+								min = 0
+								max = 1
+								value = 1
+				
+								
+								direction = horizontal
+								
+								using = progressbar_marker_indicator
+								using = progressbar_texture_properties
+							}
+						}
+						widget = {
+							#visible = no
+							size = { 100% 100% }
+							parentanchor = left
+							scissor = yes
+							#position = { 40% }
+							progressbar = {
+								#noprogresstexture = "gfx/interface/progressbar/progressbar_empty.dds"
+								progresstexture = "gfx/interface/progressbar/progressbar_white.dds"
+															
+								size = { 100% 100% }
+								spriteType = Corneredtiled
+								spriteborder = { 4 4 }
+								texture_density = 2
+								skip_initial_animation = yes
+								
+								min = 0
+								max = 1
+								value = "[FixedPointToFloat(Country.MakeScope.ScriptValue('percent_not_opposed'))]"
+								direction = horizontal
+								
+								blockoverride "glow" {}
+
+								using = progressbar_marker_indicator
+								using = progressbar_texture_properties
+							}
+							textbox = {
+								parentanchor = center
+								#raw_text = "hello"
+							}
+						}
+						widget = {
+							size = { 100% 100% }
+							parentanchor = left
+							scissor = yes
+							
+							progressbar = {
+								#noprogresstexture = "gfx/interface/progressbar/progressbar_empty.dds"
+								progresstexture = "gfx/interface/progressbar/progressbar_green.dds"
+															
+								size = { 100% 100% }
+								spriteType = Corneredtiled
+								spriteborder = { 4 4 }
+								texture_density = 2
+								skip_initial_animation = yes
+								
+								min = 0
+								max = 1
+								value = "[FixedPointToFloat(Country.MakeScope.ScriptValue('percent_in_favor'))]"
+								
+								blockoverride "glow" {}
+																
+								direction = horizontal
+								
+								using = progressbar_marker_indicator
+								using = progressbar_texture_properties
+							}
+						}
+
+						widget = {
+							size = { 100% 100% }
+							
+							background = {
+								name = "frame"
+								texture = "gfx/interface/progressbar/progressbar_frame.dds"
+								spriteType = Corneredstretched
+								spriteborder = { 6 6 }
+								texture_density = 2
+								margin = { 3 3 }
+							}
+						}
+						### center divider
+						widget = {
+							size = { 5 100% }
+							parentanchor = center
+							
+							background = {
+								texture = "gfx/interface/progressbar/progressbar_center_divider.dds"
+								spriteType = Corneredstretched
+								spriteborder = { 0 0 }
+								texture_density = 2
+								margin = { 0 1 }
+							}
+						}
+
+				
+
+
+
+					}
+							background = {
+			texture = "gfx/interface/progressbar/progressbar_empty.dds"
+			spriteType = Corneredtiled
+			spriteborder = { 4 4 }
+			texture_density = 2
+			
+			using = progressbar_texture_properties
+		}
+					
+					
+				}
+				hbox = {
+					layoutpolicy_horizontal = expanding
+					layoutpolicy_vertical = preferred
+					margin = { 7 4 }
+					spacing = 20
+	
+					# government
+					hbox = {
+						visible = "[Not(IsDataModelEmpty(Country.AccessInterestGroupsInGovernment))]"
+						layoutpolicy_horizontal = expanding
+						layoutpolicy_vertical = shrinking
+						margin = { 3 3 }
+						margin_left = 0
+						#layoutstretchfactor_horizontal = "[FixedPointToInt(Multiply_CFixedPoint(Country.GetTotalGovernmentClout, '(CFixedPoint)100'))]"
+						
+						background = {
+							using = dark_area
+							margin_left = -18
+						}
+						background = {
+							using = simple_frame
+							margin_left = -18
+						}
+						
+						widget = {
+							size = { 50 40 }
+							
+							icon = {
+								size = { 52 52 }
+								texture = "gfx/interface/icons/generic_icons/in_government_icon.dds"
+								parentanchor = right|vcenter
+								tooltip = "INTEREST_GROUPS_IN_GOVERNMENT"
+								using = tooltip_below
+								using = in_government_tooltip_with_graph
+							}
+						}
+	
+						datamodel = "[Country.AccessInterestGroupsInGovernment]"
+						
+						item = {
+							ig_item_bar_legislators = {}
+						}
+					}
+					
+					# opposition
+					hbox = {
+						visible = "[Not(IsDataModelEmpty(Country.AccessInterestGroupsInOpposition))]"
+						layoutpolicy_horizontal = expanding
+						layoutpolicy_vertical = preferred
+						margin = { 2 0 }
+						#layoutstretchfactor_horizontal = "[FixedPointToInt(Multiply_CFixedPoint(Country.GetTotalOppositionClout, '(CFixedPoint)100'))]" 
+						
+						icon = {
+							size = { 40 40 }
+							texture = "gfx/interface/icons/generic_icons/in_opposition_icon.dds"
+							tooltip = "INTEREST_GROUPS_IN_OPPOSITION"
+							using = tooltip_below
+							using = in_opposition_tooltip_with_graph
+						}
+	
+						datamodel = "[Country.AccessInterestGroupsInOpposition]"
+						
+						item = {
+							ig_item_bar_legislators = {
+								margin = { 0 5 }
+								minimumsize = { 75 -1 }
+	
+								blockoverride "ig_icon_size" {
+									size = { 35 35 }
+								}
+	
+								blockoverride "background_alpha" {
+									alpha = 0.1
+								}
+							}
+						}
+					}
+					
+					# marginilized
+					icon = {
+						visible = "[Not(IsDataModelEmpty(Country.AccessMarginalInterestGroups))]"
+						size = { 35 35 }
+						texture = "gfx/interface/icons/generic_icons/marginalized.dds"
+						tooltip = "MARGINALIZED_INTEREST_GROUPS"
+						using = tooltip_below
+						using = marginalized_tooltip_with_graph
+					}
+				}
+			}
+		}
+	}
+}

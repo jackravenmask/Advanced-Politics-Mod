@@ -1,0 +1,486 @@
+﻿law_approval = {
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law.type
+				value = strongly_disapprove
+			}
+		}
+		value = -2
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law.type
+				value = disapprove
+			}
+		}
+		value = -1
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law.type
+				value = neutral
+			}
+		}
+		value = 0
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law.type
+				value = approve
+			}
+		}
+		value = 1
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law.type
+				value = strongly_approve
+			}
+		}
+		value = 2
+	}	
+}
+
+law_approval2 = {
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law2.type
+				value = strongly_disapprove
+			}
+		}
+		value = -2
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law2.type
+				value = disapprove
+			}
+		}
+		value = -1
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law2.type
+				value = neutral
+			}
+		}
+		value = 0
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law2.type
+				value = approve
+			}
+		}
+		value = 1
+	}
+	if = {
+		limit = { 
+			law_stance = {
+				law = scope:input_law2.type
+				value = strongly_approve
+			}
+		}
+		value = 2
+	}	
+}
+
+law_change_approval = {
+	#this = character
+	#has scope:input_law
+
+	value = law_approval
+	if = {
+		limit = {
+			
+			owner = {
+				any_law = {
+					#THIS = law
+					#PREV = country
+					#PREVPREV = char
+					type = {
+						is_same_law_group_as = scope:input_law.type #Inconsistent trigger scopes (building_type vs. law_type) in file: common/script_values/ap_legislature_values.txt line: 124
+						
+					}
+					owner = {
+						has_law = prev.type
+					}
+					save_temporary_scope_as = input_law2
+					
+					
+				}
+			}
+
+			law_approval2 = 2
+		}
+		subtract = 2
+	}
+	if = {
+		limit = {
+			
+			owner = {
+				any_law = {
+					type = {
+						is_same_law_group_as = scope:input_law.type #Inconsistent trigger scopes (building_type vs. law_type) in file: common/script_values/ap_legislature_values.txt line: 145
+						
+					}
+					owner = {
+						has_law = prev.type
+					}
+					save_temporary_scope_as = input_law2
+					
+				}
+			}
+			law_approval2 = 1
+		}
+		subtract = 1
+	}
+	#if = {
+	#	limit = {
+	#		
+	#		owner = {
+	#			any_law = {
+	#				type = {
+	#					is_same_law_group_as = scope:input_law.type
+	#					owner = {
+	#						has_law = prev.type
+	#					}
+	#				}
+	#				save_temporary_scope_as = input_law2
+	#				prevprev.law_approval2 = 0
+	#			}
+	#		}
+	#	}
+	#	subtract = 0
+	#}
+	if = {
+		limit = {
+			
+			owner = {
+				any_law = {
+					type = {
+						is_same_law_group_as = scope:input_law.type #Inconsistent trigger scopes (building_type vs. law_type) in file: common/script_values/ap_legislature_values.txt line: 183
+					}
+					owner = {
+						has_law = prev.type
+					}
+					save_temporary_scope_as = input_law2
+					
+				}
+			}
+			law_approval2 = -1
+		}
+		subtract = -1
+	}
+	if = {
+		limit = {
+			scope:input_law = {
+				save_temporary_scope_as = comparison_law
+			}
+			owner = {
+				any_law = {
+					type = {
+						is_same_law_group_as = scope:comparison_law.type #Inconsistent trigger scopes (building_type vs. law_type) in file: common/script_values/ap_legislature_values.txt line: 204
+						
+					}
+					owner = {
+						has_law = prev.type
+					}
+					save_temporary_scope_as = input_law2
+					
+				}
+			}
+			law_approval2 = -2
+		}
+		subtract = -2
+	}
+
+}
+
+
+
+law_approval_simple = {
+	#this = character
+	#saved scope input_law
+	value = 0
+	if = {
+		limit = { 
+			is_target_in_variable_list = {
+				name = laws_2_list
+				target = scope:input_law
+			}
+		}
+		add = 2
+	}
+	if = {
+		limit = { 
+			is_target_in_variable_list = {
+				name = laws_1_list
+				target = scope:input_law
+			}
+		}
+		add = 1
+	}
+	if = {
+		limit = { 
+			is_target_in_variable_list = {
+				name = laws_0_list
+				target = scope:input_law
+			}
+		}
+		add = 0
+	}
+	if = {
+		limit = { 
+			is_target_in_variable_list = {
+				name = laws_-1_list
+				target = scope:input_law
+			}
+		}
+		add = -1
+	}
+	if = {
+		limit = { 
+			is_target_in_variable_list = {
+				name = laws_-2_list
+				target = scope:input_law
+			}
+		}
+		add = -2
+	}
+}
+
+law_change_approval_simple = {
+	#this = character
+	#scope:input_law
+
+	value = law_approval_simple
+	every_in_list = {
+		variable = laws_2_list
+		limit = {
+			type = {
+				is_same_law_group_as = scope:input_law.type
+			}
+			owner = {
+				has_law = prev.type
+			}
+		}
+		subtract = 2
+	}
+	every_in_list = {
+		variable = laws_1_list
+		limit = {
+			type = {
+				is_same_law_group_as = scope:input_law.type
+			}
+			owner = {
+				has_law = prev.type
+			}
+		}
+		subtract = 1
+	}
+	every_in_list = {
+		variable = laws_-1_list
+		limit = {
+			type = {
+				is_same_law_group_as = scope:input_law.type
+			}
+			owner = {
+				has_law = prev.type
+			}
+		}
+		subtract = -1
+	}
+	every_in_list = {
+		variable = laws_-2_list
+		limit = {
+			type = {
+				is_same_law_group_as = scope:input_law.type
+			}
+			owner = {
+				has_law = prev.type
+			}
+		}
+		subtract = -2
+	}
+}
+
+
+
+
+law_proposal_approval = {
+	#this = character_or_ig
+	value = 0
+	
+	every_in_list = {
+		variable = laws_2_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = proposed_laws
+					target = prev
+				}
+			}
+		}
+		add = 2
+	}
+	every_in_list = {
+		variable = laws_2_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = laws_to_be_replaced
+					target = prev
+				}
+			}
+		}
+		subtract = 2
+	}
+
+	every_in_list = {
+		variable = laws_1_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = proposed_laws
+					target = prev
+				}
+			}
+		}
+		add = 1
+	}
+	every_in_list = {
+		variable = laws_1_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = laws_to_be_replaced
+					target = prev
+				}
+			}
+		}
+		subtract = 1
+	}
+
+	every_in_list = {
+		variable = laws_-1_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = proposed_laws
+					target = prev
+				}
+			}
+		}
+		add = -1
+	}
+	every_in_list = {
+		variable = laws_-1_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = laws_to_be_replaced
+					target = prev
+				}
+			}
+		}
+		subtract = -1
+	}
+
+	every_in_list = {
+		variable = laws_-2_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = proposed_laws
+					target = prev
+				}
+			}
+		}
+		add = -2
+	}
+	every_in_list = {
+		variable = laws_-2_list
+		limit = {
+			owner = {
+				is_target_in_variable_list = {
+					name = laws_to_be_replaced
+					target = prev
+				}
+				
+			}
+		}
+		subtract = -2
+	}
+}
+
+
+legislator_law_proposal_approval = {
+	#this = character
+	#if = {
+	#	limit = { 
+	#		law_proposal_approval = 0
+	#	}
+	#	value = interest_group.law_proposal_approval
+	#}
+	#else = {
+	#	value = law_proposal_approval
+	#}
+	value = law_proposal_approval
+	add = interest_group.law_proposal_approval
+}
+
+
+legislators_in_favor = {
+	#country
+	value = 0
+	every_in_list = {
+		variable = country_legislators
+		limit = {
+			legislator_law_proposal_approval > 0
+		}
+		add = 1
+	}
+}
+percent_in_favor = {
+	value = legislators_in_favor
+	divide = var:total_legislators
+}
+legislators_opposed = {
+	value = 0
+	every_in_list = {
+		variable = country_legislators
+		limit = {
+			legislator_law_proposal_approval < 0
+
+		}
+		add = 1
+	}
+}
+percent_opposed = {
+	value = legislators_opposed
+	divide = var:total_legislators
+}
+percent_not_opposed = {
+	value = 1
+	subtract = percent_opposed
+}
+legislators_on_the_fence = {
+	value = 0
+	every_in_list = {
+		variable = country_legislators
+		limit = {
+			legislator_law_proposal_approval = 0
+		}
+		add = 1
+	}
+}

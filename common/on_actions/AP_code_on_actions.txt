@@ -1,0 +1,71 @@
+﻿
+on_law_enactment_started = {
+	on_actions = {
+		on_ap_law_enactment_started
+	}
+}
+
+on_law_enactment_ended = {
+	on_actions = {
+		on_ap_law_enactment_ended
+	}
+}
+
+on_monthly_pulse_state = {
+	on_actions = {
+		on_ap_monthly_pulse_state
+	}
+}
+
+
+on_monthly_pulse_country = {
+	effect = {
+		every_interest_group = {
+			update_approval_lists = yes
+		}
+	}
+}
+
+
+
+on_ap_monthly_pulse_state = {
+	events = {
+		ap_legislature.2
+	}
+}
+on_ap_law_enactment_started  = {
+	effect = {
+		add_to_variable_list = {
+			name = proposed_laws
+			target = currently_enacting_law
+		}
+		every_law = {
+			limit = {
+				type = {
+					is_same_law_group_as = prev.owner.currently_enacting_law.type
+				}
+				owner = {
+					has_law = prev.type
+				}
+			}
+			owner = {
+				add_to_variable_list = {
+					name = laws_to_be_replaced
+					target = prev
+				}
+			}
+		}
+		every_interest_group = {
+			sort_ig_legislator_list = yes
+		}
+	}
+}
+
+on_ap_law_enactment_ended = {
+	effect = {
+		clear_variable_list = proposed_laws
+		clear_variable_list = laws_to_be_replaced
+		#clear_variable_list = proposed_free_incorporates
+		#clear_variable_list = proposed_slave_incorporates
+	}
+}

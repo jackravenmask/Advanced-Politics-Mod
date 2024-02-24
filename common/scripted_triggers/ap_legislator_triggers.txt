@@ -1,0 +1,12 @@
+﻿
+
+reelection = {
+	#root = state
+	#assumed that the largest interest group has already been calculated for the state
+	and = {
+		has_variable = legislator_of_state
+		var:legislator_of_state = {
+			interest_group = scope:largest_interest_group
+		}
+	}
+}

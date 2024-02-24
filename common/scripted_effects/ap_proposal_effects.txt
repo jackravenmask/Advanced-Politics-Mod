@@ -1,0 +1,153 @@
+﻿@negative_infinity = -999
+@positive_infinity = 999
+
+#sort_variable_list_descending = {
+#	set_variable = {
+#		name = current_value
+#		value = @negative_infinity
+#	}
+#	set_variable = {
+#		name = list_size
+#		value = 0
+#	}
+#	every_in_list = {
+#		variable = $VARIABLE_LIST$
+#		save_scope_as = variable_list_item
+#		prev = {
+#			change_variable = {
+#				name = current_value
+#				max = scope:variable_list_item.$SORTED_VALUE$
+#			}
+#			change_variable = {
+#				name = list_size
+#				add = 1 
+#			}
+#		}
+#		clear_saved_scope = variable_list_item
+#	}
+#	add_to_variable_list = {
+#		name = temp_list
+#		target = this
+#	}
+#	while = {
+#		limit = {
+#			or = {
+#				not = {
+#					has_variable_list = temp_list
+#				}
+#				variable_list_size = {
+#					name = temp_list
+#					value < var:list_size
+#				}
+#			}
+#		}
+#		every_in_list = {
+#			variable = $VARIABLE_LIST$
+#			limit = {
+#				this.$SORTED_VALUE$ = prev.var:current_value
+#			}
+#			prev = {
+#				add_to_variable_list = {
+#					name = temp_list
+#					target = prev
+#				}
+#			}
+#		}
+#
+#		
+#	}
+#	
+#}
+
+
+sort_ig_legislator_list = {
+	#this = ig
+	save_scope_as = current_ig
+	set_variable = {
+		name = current_approval
+		value = @negative_infinity
+	}
+	set_variable = {
+		name = list_size
+		value = 0
+	}
+	every_in_list = {
+		variable = ig_legislator_list
+		save_scope_as = current_character
+		prev = {
+			change_variable = {
+				name = current_approval
+				max = scope:current_character.legislator_law_proposal_approval
+			}
+			change_variable = {
+				name = list_size
+				add = 1
+			}
+		}
+		clear_saved_scope = current_character
+	}
+
+	#creates_sorted_variable_list = ig_temp_list
+	while = {
+		limit = {
+			or = {
+				not = {
+					has_variable_list = ig_temp_list
+				}
+				variable_list_size = {
+					name = ig_temp_list
+					value < var:list_size
+				}
+			}
+		}
+		
+
+		every_in_list = {
+			variable = ig_legislator_list
+			limit = {
+				legislator_law_proposal_approval = prev.var:current_approval
+			}
+			scope:current_ig = {
+				add_to_variable_list = {
+					name = ig_temp_list
+					target = prev
+				}
+			}
+		}
+
+		#set new value of current_approval
+		set_variable = {
+			name = temp_var
+			value = @negative_infinity
+		}
+		every_in_list = {
+			#find the next smallest
+			variable = ig_legislator_list
+			limit = {
+				legislator_law_proposal_approval < prev.var:current_approval
+			}
+			prev = {
+				change_variable = {
+					name = temp_var
+					max = prev.legislator_law_proposal_approval
+				}
+			}
+		}
+		set_variable = {
+			name = current_approval
+			value = var:temp_var
+		}
+		#remove_variable = temp_var
+	}
+	clear_variable_list = ig_legislator_list
+	every_in_list = {
+		variable = ig_temp_list
+		prev = {
+			add_to_variable_list = {
+				name = ig_legislator_list
+				target = prev
+			}
+		}
+	}
+	clear_variable_list = ig_temp_list
+}
